@@ -66,8 +66,8 @@ create_nmap_dir(){
 # run full tcp port scan with default nmap scripts in new terminal window.
 run_nmap() {
     
-    gnome-terminal --geometry 105x26+0+0 -- bash -c "nmap -vv -Pn --disable-arp-ping -sS -A -sC -p- -T 3 -script-args=unsafe=1 -n -oA nmap/initial $IP; exec $SHELL"
-    # gnome-terminal --geometry 105x26+0+0 -- bash -c "nmap -sC -v -sV -p- -T4 -oA nmap/initial $IP; exec $SHELL"
+    # gnome-terminal --geometry 105x26+0+0 -- bash -c "nmap -vv -Pn --disable-arp-ping -sS -A -sC -p- -T 3 -script-args=unsafe=1 -n -oA nmap/initial $IP; exec $SHELL"
+    gnome-terminal --geometry 105x26+0+0 -- bash -c "nmap -sC -v -sV -p- -T4 -oA nmap/initial $IP; exec $SHELL"
     printf "\e[93m################### RUNNING NMAP ALL TCP PORTS ##################################################### \e[0m\n"
     sleep 2
     
@@ -117,8 +117,17 @@ run_nmap() {
     printf "\e[93m#################################################################################################### \e[0m\n"
     printf "\e[36m[+] Waiting for All SCANS To Finish up \e[0m\n"
     printf "\e[93m#################################################################################################### \e[0m\n"
-    printf "\e[93m[+] FINISHED SCANS \e[0m\n"
-    echo "[+] See you Space Cowboy..."
+    printf "\e[36m[+] FINISHED SCANS \e[0m\n"
+    printf "\e[93m#################################################################################################### \e[0m\n"
+    printf "\e[36m[+] Checking Vulnerabilities \e[0m\n"
+    printf "\e[93m#################################################################################################### \e[0m\n"
+    cd /opt/ReconScan && python3 vulnscan.py -a $cwd/nmap/initial.xml
+    printf "\e[93m#################################################################################################### \e[0m\n"
+    cd /opt/ReconScan && python3 vulnscan.py -a $cwd/nmap/udp.xml
+    printf "\e[93m#################################################################################################### \e[0m\n"
+    echo "[*] See you Space Cowboy..."
+    printf "\e[93m#################################################################################################### \e[0m\n"
+    printf "\n"
 }
 
 # TODO. if port 445 is open run this nmap script, nmap -PS445 -p445 --script=smb-os-discovery,smb-enum-shares,smb-ls --script-args=ls.maxdepth=10 192.168.1.9
@@ -150,7 +159,7 @@ dirsearch() {
 
 # TODO: ADD Enumeration Function That Parses NMAP OutPut . Bottom-Left-Window
 # Enumerate() {
-#     gnome-terminal --geometry 105x25+0-0 -- bash -c "nikto -h $IP -Format txt -o niktoutput.txt; exec $SHELL"
+#     gnome-terminal --geometry 105x25+0-0 -- bash -c "ENUMERATE TOOLS HERE; exec $SHELL"
 # }
 
 traperr() {
