@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # A script to automate information gathering on KALI LINUX
+# gotr00t security team!
 
 # banner
 banner1() {
