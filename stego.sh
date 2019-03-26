@@ -9,7 +9,7 @@ banner() {
     printf "\e[1;93m |__     | |   | |    ___|    |  |   *   |       |       | |   | |    ___|    \e[0m\n"
     printf "\e[1;93m |_______| |___| |_______|_______|_______|__|_|__|___|___| |___| |_______|    \e[0m\n"
     printf "\e[1;93m                                                                              \e[0m\n"
-    printf "\e[1;77m\e[45m                  STEGOMATE by @Knowledge-Wisdom-Understanding         \e[0m\n"
+    printf "\e[1;77m\e[45m                  STEGOMATE by @Knowledge-Wisdom-Understanding                 \e[0m\n"
     printf "\n"
     
 }
@@ -72,7 +72,7 @@ run_steg_tools() {
             steghide extract -sf $i -p password
             printf "\e[93m#################################################################################################### \e[0m\n"
         done
-    }
+    } > steghiderout.log
     
     
     exif_tool
@@ -83,6 +83,7 @@ run_steg_tools() {
     cat exifout.log >> steg_report.log
     cat bwalkout.log >> steg_report.log
     cat stringsout.log >> steg_report.log
+    cat steghiderout.log >> steg_report.log
     
     create_steg_report_dir(){
         if [ -d steg_report ]; then
