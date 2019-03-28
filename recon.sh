@@ -11,7 +11,7 @@ banner1() {
     printf "\e[1;92m  |   |     ___    \|  |  /|  | (  |_| )  |    |   \  ___/\  \__(  |_| )   |   | \e[0m\n"
     printf "\e[1;92m  |___|____/\__\____|____/_|__|\_\____/|__|____|_  /\___  |\___  \____/|___|  /  \e[0m\n"
     printf "\e[1;92m                                             \___\/  \__\/  \__\/        \__\/   \e[0mv2.7\n"
-    printf "\e[1;77m\e[45m                  AUTO RECON by @Knowledge-Wisdom-Understanding                         \e[0m\n"
+    printf "\e[1;77m\e[45m      AUTO RECON by github.com/Knowledge-Wisdom-Understanding                           \e[0m\n"
     printf "\n"
     
 }
@@ -24,7 +24,7 @@ banner2() {
     printf "\e[1;92m ██╔══██║██║   ██║   ██║   ██║   ██║    ██╔══██╗██╔══╝  ██║     ██║   ██║██║╚██╗██║ \e[0m\n"
     printf "\e[1;92m ██║  ██║╚██████╔╝   ██║   ╚██████╔╝    ██║  ██║███████╗╚██████╗╚██████╔╝██║ ╚████║ \e[0m\n"
     printf "\e[1;92m ╚═╝  ╚═╝ ╚═════╝    ╚═╝    ╚═════╝     ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝ \e[0mv2.7\n"
-    printf "\e[1;77m\e[45m                  AUTO RECON by @Knowledge-Wisdom-Understanding                         \e[0m\n"
+    printf "\e[1;77m\e[45m       AUTO RECON by github.com/Knowledge-Wisdom-Understanding                             \e[0m\n"
     printf "\n"
     
 }
