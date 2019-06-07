@@ -82,21 +82,6 @@ exitFunction() {
 #     fi
 # }
 
-# Open_Ports_Scan() {
-#     echo -e "${DOPE}Scanning $rhost"
-#     create_nmap_dir() {
-#         if [ -d nmap ]; then
-#             echo "nmap directory exists"
-#         else
-#             echo "creating nmap directory"
-#             mkdir -p nmap
-#         fi
-#     }
-#     create_nmap_dir
-#     # nmap -v -Pn -A -O -p- --max-retries 1 --max-rate 500 --max-scan-delay 20 -T4 -oN nmap/FullTCP $rhost
-#     nmap -vv -sT -Pn --top-ports 100 --disable-arp-ping --max-retries 1 -oA nmap/open-ports-$rhost $rhost
-# }
-
 Open_Ports_Scan() {
     echo -e "${DOPE}Scanning $rhost"
     create_nmap_dir() {
@@ -216,10 +201,12 @@ Enum_Web() {
         echo -e "${DOPE} nikto -h http://$rhost -output niktoscan-port80-$rhost.txt"
         echo -e "${DOPE} whatweb -a 3 http://$rhost:80 | tee whatweb-$rhost-80.log"
         echo -e "${DOPE} curl -O http://$rhost:80/robots.txt"
+        echo -e "${DOPE} uniscan -u http://$rhost/ -qweds | tee uniscan-$rhost-80.log"
         curl http://$rhost:80/robots.txt -o robots-$rhost-80.txt
         gnome-terminal --geometry 105x26-0+0 -- bash -c "python3 /opt/dirsearch/dirsearch.py -u http://$rhost -w $wordlist -t 50 -e php,asp,aspx -x 403 --plain-text-report dirsearch-80.log; exec $SHELL" &>/dev/null
-        gnome-terminal --geometry 105x26+0+0 -- bash -c "nikto -h http://$rhost -output niktoscan-port80-$rhost.txt; exec $SHELL" &>/dev/null
+        gnome-terminal --geometry 105x26+0+0 -- bash -c "nikto -host http://$rhost -output niktoscan-port80-$rhost.txt; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x25+0-0 -- bash -c "whatweb -a 3 http://$rhost:80 | tee whatweb-$rhost-80.log; exec $SHELL" &>/dev/null
+        gnome-terminal --geometry 105x25-0-0 -- bash -c "uniscan -u http://$rhost -qweds | tee uniscan-$rhost-80.log; exec $SHELL" &>/dev/null
     fi
     whatweb_process_id() {
         getpid=$(ps -elf | grep whatweb | grep -v grep | awk '{print $4}')
@@ -260,11 +247,13 @@ Enum_Web() {
         echo -e "${DOPE} nikto -h http://$rhost:8080 -output niktoscan-port8080-$rhost.txt"
         echo -e "${DOPE} whatweb -a 3 http://$rhost:8080 | tee whatweb-$rhost-8080.log"
         echo -e "${DOPE} curl -O http://$rhost:8080/robots.txt"
+        echo -e "${DOPE} uniscan -u http://$rhost:8080/ -qweds | tee uniscan-$rhost-8080.log"
         curl http://$rhost:8080/robots.txt -o robots-$rhost-8080.txt
 
         gnome-terminal --geometry 105x26-0+0 -- bash -c "python3 /opt/dirsearch/dirsearch.py -u http://$rhost:8080 -w $wordlist -t 50 -e php,asp,aspx -x 403 --plain-text-report dirsearch-8080.log; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x26+0+0 -- bash -c "nikto -h http://$rhost:8080/ -output niktoscan-port8080-$rhost.txt; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x25+0-0 -- bash -c "whatweb -a 3 http://$rhost:8080 | tee whatweb-$rhost-8080.log; exec $SHELL" &>/dev/null
+        gnome-terminal --geometry 105x25-0-0 -- bash -c "uniscan -u http://$rhost:8080/ -qweds | tee uniscan-$rhost-8080.log; exec $SHELL" &>/dev/null
     fi
     whatweb_process_id() {
         getpid=$(ps -elf | grep whatweb | grep -v grep | awk '{print $4}')
@@ -305,10 +294,12 @@ Enum_Web() {
         echo -e "${DOPE} nikto -h http://$rhost:8000 -output niktoscan-port8000-$rhost.txt"
         echo -e "${DOPE} whatweb -a 3 http://$rhost:8000 | tee whatweb-$rhost-8000.log"
         echo -e "${DOPE} curl -O http://$rhost:8000/robots.txt"
+        echo -e "${DOPE} uniscan -u http://$rhost:8000/ -qweds | tee uniscan-$rhost-8000.log"
         curl http://$rhost:8000/robots.txt -o robots-$rhost-8000.txt
         gnome-terminal --geometry 105x26-0+0 -- bash -c "python3 /opt/dirsearch/dirsearch.py -u http://$rhost:8000 -w $wordlist -t 50 -e php,asp,aspx -x 403 --plain-text-report dirsearch-8000.log; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x26+0+0 -- bash -c "nikto -h http://$rhost:8000/ -output niktoscan-port8000-$rhost.txt; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x25+0-0 -- bash -c "whatweb -a 3 http://$rhost:8000 | tee whatweb-$rhost-8000.log; exec $SHELL" &>/dev/null
+        gnome-terminal --geometry 105x25-0-0 -- bash -c "uniscan -u http://$rhost:8000/ -qweds | tee uniscan-$rhost-8000.log; exec $SHELL" &>/dev/null
     fi
     whatweb_process_id() {
         getpid=$(ps -elf | grep whatweb | grep -v grep | awk '{print $4}')
@@ -349,10 +340,12 @@ Enum_Web() {
         echo -e "${DOPE} nikto -h http://$rhost:8888 -output niktoscan-port8888-$rhost.txt"
         echo -e "${DOPE} whatweb -a 3 http://$rhost:8888 | tee whatweb-$rhost-8888.log"
         echo -e "${DOPE} curl -O http://$rhost:8888/robots.txt"
+        echo -e "${DOPE} uniscan -u http://$rhost:8888/ -qweds | tee uniscan-$rhost-8888.log"
         curl http://$rhost:8888/robots.txt -o robots-$rhost-8888.txt
         gnome-terminal --geometry 105x26-0+0 -- bash -c "python3 /opt/dirsearch/dirsearch.py -u http://$rhost:8888 -w $wordlist -t 50 -e php,asp,aspx -x 403 --plain-text-report dirsearch-8888.log; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x26+0+0 -- bash -c "nikto -h http://$rhost:8888/ -output niktoscan-port8888-$rhost.txt; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x25+0-0 -- bash -c "whatweb -a 3 http://$rhost:8888 | tee whatweb-$rhost-8888.log; exec $SHELL" &>/dev/null
+        gnome-terminal --geometry 105x25-0-0 -- bash -c "uniscan -u http://$rhost:8888/ -qweds | tee uniscan-$rhost-8888.log; exec $SHELL" &>/dev/null
     fi
     whatweb_process_id() {
         getpid=$(ps -elf | grep whatweb | grep -v grep | awk '{print $4}')
@@ -393,10 +386,12 @@ Enum_Web() {
         echo -e "${DOPE} nikto -h http://$rhost:1234 -output niktoscan-port1234-$rhost.txt"
         echo -e "${DOPE} whatweb -a 3 http://$rhost:1234 | tee whatweb-$rhost-1234.log"
         echo -e "${DOPE} curl -O http://$rhost:1234/robots.txt"
+        echo -e "${DOPE} uniscan -u http://$rhost:1234/ -qweds | tee uniscan-$rhost-1234.log"
         curl http://$rhost:1234/robots.txt -o robots-$rhost-1234.txt
         gnome-terminal --geometry 105x26-0+0 -- bash -c "python3 /opt/dirsearch/dirsearch.py -u http://$rhost:1234 -w $wordlist -t 50 -e php,asp,aspx -x 403 --plain-text-report dirsearch-1234.log; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x26+0+0 -- bash -c "nikto -h http://$rhost:1234/ -output niktoscan-port1234-$rhost.txt; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x25+0-0 -- bash -c "whatweb -a 3 http://$rhost:1234 | tee whatweb-$rhost-1234.log; exec $SHELL" &>/dev/null
+        gnome-terminal --geometry 105x25-0-0 -- bash -c "uniscan -u http://$rhost:1234/ -qweds | tee uniscan-$rhost-1234.log; exec $SHELL" &>/dev/null
     fi
     whatweb_process_id() {
         getpid=$(ps -elf | grep whatweb | grep -v grep | awk '{print $4}')
@@ -437,10 +432,12 @@ Enum_Web() {
         echo -e "${DOPE} nikto -h http://$rhost:1337 -output niktoscan-port1337-$rhost.txt"
         echo -e "${DOPE} whatweb -a 3 http://$rhost:1337 | tee whatweb-$rhost-1337.log"
         echo -e "${DOPE} curl -O http://$rhost:1337/robots.txt"
+        echo -e "${DOPE} uniscan -u http://$rhost:1337/ -qweds | tee uniscan-$rhost-1337.log"
         curl http://$rhost:1337/robots.txt -o robots-$rhost-1337.txt
         gnome-terminal --geometry 105x26-0+0 -- bash -c "python3 /opt/dirsearch/dirsearch.py -u http://$rhost:1337 -w $wordlist -t 50 -e php,asp,aspx -x 403 --plain-text-report dirsearch-1337.log; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x26+0+0 -- bash -c "nikto -h http://$rhost:1337/ -output niktoscan-port1337-$rhost.txt; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x25+0-0 -- bash -c "whatweb -a 3 http://$rhost:1337 | tee whatweb-$rhost-1337.log; exec $SHELL" &>/dev/null
+        gnome-terminal --geometry 105x25-0-0 -- bash -c "uniscan -u http://$rhost:1337/ -qweds | tee uniscan-$rhost-1337.log; exec $SHELL" &>/dev/null
     fi
     whatweb_process_id() {
         getpid=$(ps -elf | grep whatweb | grep -v grep | awk '{print $4}')
@@ -481,10 +478,12 @@ Enum_Web() {
         echo -e "${DOPE} nikto -h http://$rhost:31337 -output niktoscan-port31337-$rhost.txt"
         echo -e "${DOPE} whatweb -a 3 http://$rhost:31337 | tee whatweb-$rhost-31337.log"
         echo -e "${DOPE} curl -O http://$rhost:31337/robots.txt"
+        echo -e "${DOPE} uniscan -u http://$rhost:31337/ -qweds | tee uniscan-$rhost-31337.log"
         curl http://$rhost:31337/robots.txt -o robots-$rhost-31337.txt
         gnome-terminal --geometry 105x26-0+0 -- bash -c "python3 /opt/dirsearch/dirsearch.py -u http://$rhost:31337 -w $wordlist -t 50 -e php,asp,aspx -x 403 --plain-text-report dirsearch-31337.log; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x26+0+0 -- bash -c "nikto -h http://$rhost:31337/ -output niktoscan-port31337-$rhost.txt; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x25+0-0 -- bash -c "whatweb -a 3 http://$rhost:31337 | tee whatweb-$rhost-31337.log; exec $SHELL" &>/dev/null
+        gnome-terminal --geometry 105x25-0-0 -- bash -c "uniscan -u http://$rhost:31337/ -qweds | tee uniscan-$rhost-31337.log; exec $SHELL" &>/dev/null
     fi
     whatweb_process_id() {
         getpid=$(ps -elf | grep whatweb | grep -v grep | awk '{print $4}')
@@ -525,10 +524,12 @@ Enum_Web() {
         echo -e "${DOPE} nikto -h http://$rhost:9050 -output niktoscan-port9050-$rhost.txt"
         echo -e "${DOPE} whatweb -a 3 http://$rhost:9050 | tee whatweb-$rhost-9050.log"
         echo -e "${DOPE} curl -O http://$rhost:9050/robots.txt"
+        echo -e "${DOPE} uniscan -u http://$rhost:9050/ -qweds | tee uniscan-$rhost-9050.log"
         curl http://$rhost:9050/robots.txt -o robots-$rhost-9505.txt
         gnome-terminal --geometry 105x26-0+0 -- bash -c "python3 /opt/dirsearch/dirsearch.py -u http://$rhost:9050 -w $wordlist -t 50 -e php,asp,aspx -x 403 --plain-text-report dirsearch-9050.log; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x26+0+0 -- bash -c "nikto -h http://$rhost:9050/ -output niktoscan-port9050-$rhost.txt; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x25+0-0 -- bash -c "whatweb -a 3 http://$rhost:9050 | tee whatweb-$rhost-9050.log; exec $SHELL" &>/dev/null
+        gnome-terminal --geometry 105x25-0-0 -- bash -c "uniscan -u http://$rhost:9050/ -qweds | tee uniscan-$rhost-9050.log; exec $SHELL" &>/dev/null
     fi
     whatweb_process_id() {
         getpid=$(ps -elf | grep whatweb | grep -v grep | awk '{print $4}')
@@ -570,11 +571,13 @@ Enum_Web() {
         echo -e "${DOPE} whatweb -a 3 https://$rhost:443 | tee whatweb-$rhost-443.log"
         echo -e "${DOPE} curl -O http://$rhost:443/robots.txt"
         echo -e "${DOPE} sslscan https://$rhost:443 | tee sslscan-$rhost-$port.log"
+        echo -e "${DOPE} uniscan -u https://$rhost -qweds | tee uniscan-$rhost-443.log"
         curl http://$rhost:443/robots.txt -o robots-$rhost-443.txt
         gnome-terminal --geometry 123x35-0+0 -- bash -c "gobuster -e -u https://$rhost:443 -w $wordlist -s '200,204,301,302,307,403,500' -o gobuster-$rhost-443.txt -t 50 -k; exec $SHELL" &>/dev/null
-        gnome-terminal --geometry 105x26+0+0 -- bash -c "nikto -h https://$rhost:443 -output niktoscan-port443-$rhost.txt; exec $SHELL" &>/dev/null
+        gnome-terminal --geometry 105x26+0+0 -- bash -c "nikto -host https://$rhost:443 -ssl -output niktoscan-port443-$rhost.txt; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x25+0-0 -- bash -c "whatweb -a 3 https://$rhost:443 | tee whatweb-$rhost-443.log; exec $SHELL" &>/dev/null
         gnome-terminal --geometry 105x25-0-0 -- bash -c "sslscan https://$rhost:443 | tee sslscan-$rhost-$port.log; exec $SHELL" &>/dev/null
+        gnome-terminal --geometry 105x25-0-0 -- bash -c "uniscan -u https://$rhost -qweds | tee uniscan-$rhost-443.log; exec $SHELL" &>/dev/null
 
         whatweb_process_id() {
             getpid=$(ps -elf | grep whatweb | grep -v grep | awk '{print $4}')
@@ -705,8 +708,8 @@ Enum_SNMP() {
     cwd=$(pwd)
     # echo $cwd
     cd $cwd
-    grep -i "/udp" nmap/udp-$rhost.nmap | cut -d "/" -f 1 | grep 161 >udp-scan-$rhost.txt
-    grep -i "/udp" nmap/udp-$rhost.nmap | cut -d "/" -f 1 | grep 162 >>udp-scan-$rhost.txt
+    grep -i "/udp" nmap/udp-$rhost.nmap | cut -d "/" -f 1 | tail -n 1 >udp-scan-$rhost.txt
+    grep -i "/udp" nmap/udp-$rhost.nmap | cut -d "/" -f 1 | tail -n 1 >>udp-scan-$rhost.txt
     if [ $(grep -q "161" udp-scan-$rhost.txt) ] || [ $(grep -q "162" udp-scan-$rhost.txt) ]; then
         printf "\e[93m################### RUNNING SNMP-ENUMERATION ##################################################### \e[0m\n"
         onesixtyone -c /usr/share/doc/onesixtyone/dict.txt $rhost | tee -a snmpenum-scan.log
@@ -716,6 +719,7 @@ Enum_SNMP() {
         snmp-check -c public -v 2 -d $rhost | tee -a snmpenum-scan.log
         # echo "${DOPE} Running: snmpenum $rhost public /opt/snmpenum/windows.txt | tee -a snmpenum-scan.log"
         # snmpenum $rhost public /opt/snmpenum/windows.txt | tee -a snmpenum-scan.log
+
     else
         echo -e "${DOPE} SNMP Port not open."
     fi
