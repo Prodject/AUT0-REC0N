@@ -82,6 +82,21 @@ exitFunction() {
 #     fi
 # }
 
+# Open_Ports_Scan() {
+#     echo -e "${DOPE}Scanning $rhost"
+#     create_nmap_dir() {
+#         if [ -d nmap ]; then
+#             echo "nmap directory exists"
+#         else
+#             echo "creating nmap directory"
+#             mkdir -p nmap
+#         fi
+#     }
+#     create_nmap_dir
+#     # nmap -v -Pn -A -O -p- --max-retries 1 --max-rate 500 --max-scan-delay 20 -T4 -oN nmap/FullTCP $rhost
+#     nmap -vv -sT -Pn --top-ports 100 --disable-arp-ping --max-retries 1 -oA nmap/open-ports-$rhost $rhost
+# }
+
 Open_Ports_Scan() {
     echo -e "${DOPE}Scanning $rhost"
     create_nmap_dir() {
@@ -221,15 +236,19 @@ Enum_Web() {
         # echo "waiting for PID $procid to finish running NMAP script"
         while ps -p $whatwebid >/dev/null; do sleep 1; done
     else
-        echo ""
+        :
     fi
-    if grep -q "WordPress" whatweb-$rhost-80.log 2>/dev/null; then
+    if grep -i "WordPress" whatweb-$rhost-80.log 2>/dev/null; then
+        echo -e "${DOPE} Found WordPress! Running wpscan --url http://$rhost/ --enumerate p,t,u | tee -a wpscan-$rhost-80.log"
         wpscan --url http://$rhost/ --enumerate p,t,u | tee -a wpscan.log
-    elif grep -q "Drupal" whatweb-$rhost-80.log 2>/dev/null; then
+    elif grep -i "Drupal" whatweb-$rhost-80.log 2>/dev/null; then
+        echo -e "${DOPE} Found Drupal! Running droopescan scan drupal -u http://$rhost -t 32 | tee -a drupalscan-$rhost-80.log"
         droopescan scan drupal -u http://$rhost -t 32 | tee -a drupalscan.log
-    elif grep -q "Joomla" whatweb-$rhost-80.log 2>/dev/null; then
+    elif grep -i "Joomla" whatweb-$rhost-80.log 2>/dev/null; then
+        echo -e "${DOPE} Found Joomla! Running joomscan --url http://$rhost/ -ec | tee -a joomlascan-$rhost-80.log"
         joomscan --url http://$rhost -ec | tee -a joomlascan.log
-    elif grep -q "WebDAV" whatweb-$rhost-80.log 2>/dev/null; then
+    elif grep -i "WebDAV" whatweb-$rhost-80.log 2>/dev/null; then
+        echo -e "${DOPE} Found WebDAV! Running davtest -move -sendbd auto -url http://$rhost/ | tee -a davtestscan-$rhost-80.log"
         davtest -move -sendbd auto -url http://$rhost | tee -a davtestscan.log
     else
         :
@@ -264,18 +283,18 @@ Enum_Web() {
     else
         :
     fi
-    if grep -q "WordPress" whatweb-$rhost-8080.log 2>/dev/null; then
-        echo -e "${DOPE} Found WordPress, Running wpscan --url http://$rhost/ --enumerate p,t,u | tee -a wpscan.log"
-        wpscan --url http://$rhost/ --enumerate p,t,u | tee -a wpscan.log
-    elif grep -q "Drupal" whatweb-$rhost-8080.log 2>/dev/null; then
-        echo -e "${DOPE} Found Drupal, Running droopescan scan drupal -u http://$rhost -t 32 | tee -a drupalscan.log"
-        droopescan scan drupal -u http://$rhost -t 32 | tee -a drupalscan.log
-    elif grep -q "Joomla" whatweb-$rhost-8080.log 2>/dev/null; then
-        echo -e "${DOPE} Found Joomla, Running joomscan --url http://$rhost -ec | tee -a joomlascan.log"
-        joomscan --url http://$rhost -ec | tee -a joomlascan.log
-    elif grep -q "WebDAV" whatweb-$rhost-8080.log 2>/dev/null; then
-        echo -e "${DOPE} Found WebDAV, Running davtest -move -sendbd auto -url http://$rhost | tee -a davtestscan.log"
-        davtest -move -sendbd auto -url http://$rhost | tee -a davtestscan.log
+    if grep -i "WordPress" whatweb-$rhost-8080.log 2>/dev/null; then
+        echo -e "${DOPE} Found WordPress! Running wpscan --url http://$rhost:8080/ --enumerate p,t,u | tee -a wpscan-$rhost-8080.log"
+        wpscan --url http://$rhost:8080/ --enumerate p,t,u | tee -a wpscan-$rhost-8080.log
+    elif grep -i "Drupal" whatweb-$rhost-8080.log 2>/dev/null; then
+        echo -e "${DOPE} Found Drupal! Running droopescan scan drupal -u http://$rhost:8080/ -t 32 | tee -a drupalscan-$rhost-8080.log"
+        droopescan scan drupal -u http://$rhost:8080/ -t 32 | tee -a drupalscan-$rhost-8080.log
+    elif grep -i "Joomla" whatweb-$rhost-8080.log 2>/dev/null; then
+        echo -e "${DOPE} Found Joomla! Running joomscan --url http://$rhost:8080/ -ec | tee -a joomlascan-$rhost-8080.log"
+        joomscan --url http://$rhost:8080/ -ec | tee -a joomlascan-$rhost-8080.log
+    elif grep -i "WebDAV" whatweb-$rhost-8080.log 2>/dev/null; then
+        echo -e "${DOPE} Found WebDAV! Running davtest -move -sendbd auto -url http://$rhost:8080/ | tee -a davtestscan-$rhost-8080.log"
+        davtest -move -sendbd auto -url http://$rhost:8080/ | tee -a davtestscan-$rhost-8080.log
     else
         :
     fi
@@ -308,16 +327,20 @@ Enum_Web() {
     else
         :
     fi
-    if grep -q "WordPress" whatweb-$rhost-8000.log 2>/dev/null; then
-        wpscan --url http://$rhost/ --enumerate p,t,u | tee -a wpscan.log
-    elif grep -q "Drupal" whatweb-$rhost-8000.log 2>/dev/null; then
-        droopescan scan drupal -u http://$rhost -t 32 | tee -a drupalscan.log
-    elif grep -q "Joomla" whatweb-$rhost-8000.log 2>/dev/null; then
-        joomscan --url http://$rhost -ec | tee -a joomlascan.log
-    elif grep -q "WebDAV" whatweb-$rhost-8000.log 2>/dev/null; then
-        davtest -move -sendbd auto -url http://$rhost | tee -a davtestscan.log
+    if grep -i "WordPress" whatweb-$rhost-8000.log 2>/dev/null; then
+        echo -e "${DOPE} Found WordPress! Running wpscan --url http://$rhost:8000/ --enumerate p,t,u | tee -a wpscan.log"
+        wpscan --url http://$rhost:8000/ --enumerate p,t,u | tee -a wpscan-$rhost.log
+    elif grep -i "Drupal" whatweb-$rhost-8000.log 2>/dev/null; then
+        echo -e "${DOPE} Found Drupal! Running droopescan scan drupal -u http://$rhost:8000/ -t 32 | tee -a drupalscan-$rhost-8000.log"
+        droopescan scan drupal -u http://$rhost:8000/ -t 32 | tee -a drupalscan-$rhost.log
+    elif grep -i "Joomla" whatweb-$rhost-8000.log 2>/dev/null; then
+        echo -e "${DOPE} Found Joomla! Running joomscan --url http://$rhost:8000/ -ec | tee -a joomlascan-$rhost-8000.log"
+        joomscan --url http://$rhost:8000/ -ec | tee -a joomlascan-$rhost.log
+    elif grep -i "WebDAV" whatweb-$rhost-8000.log 2>/dev/null; then
+        echo -e "${DOPE} Found WebDAV! Running davtest -move -sendbd auto -url http://$rhost:8000/ | tee -a davtestscan-$rhost-8000.log"
+        davtest -move -sendbd auto -url http://$rhost:8000/ | tee -a davtestscan-$rhost.log
     else
-        echo "Couldn't find a CMS"
+        :
     fi
     if grep -q "8888" openports-$rhost.txt; then
         wordlist="/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt"
@@ -348,14 +371,18 @@ Enum_Web() {
     else
         :
     fi
-    if grep -q "WordPress" whatweb-$rhost-8888.log 2>/dev/null; then
-        wpscan --url http://$rhost/ --enumerate p,t,u | tee -a wpscan.log
-    elif grep -q "Drupal" whatweb-$rhost-8888.log 2>/dev/null; then
-        droopescan scan drupal -u http://$rhost -t 32 | tee -a drupalscan.log
-    elif grep -q "Joomla" whatweb-$rhost-8888.log 2>/dev/null; then
-        joomscan --url http://$rhost -ec | tee -a joomlascan.log
-    elif grep -q "WebDAV" whatweb-$rhost-8888.log 2>/dev/null; then
-        davtest -move -sendbd auto -url http://$rhost | tee -a davtestscan.log
+    if grep -i "WordPress" whatweb-$rhost-8888.log 2>/dev/null; then
+        echo -e "${DOPE} Found WordPress! Running wpscan --url http://$rhost:8888/ --enumerate p,t,u | tee -a wpscan-$rhost-8888.log"
+        wpscan --url http://$rhost:8888/ --enumerate p,t,u | tee -a wpscan-$rhost-8888.log
+    elif grep -i "Drupal" whatweb-$rhost-8888.log 2>/dev/null; then
+        echo -e "${DOPE} Found Drupal! Running droopescan scan drupal -u http://$rhost:8888/ -t 32 | tee -a drupalscan-$rhost-8888.log"
+        droopescan scan drupal -u http://$rhost:8888/ -t 32 | tee -a drupalscan-$rhost-8888.log
+    elif grep -i "Joomla" whatweb-$rhost-8888.log 2>/dev/null; then
+        echo -e "${DOPE} Found Joomla! Running joomscan --url http://$rhost:8888/ -ec | tee -a joomlascan-$rhost-8888.log"
+        joomscan --url http://$rhost:8888/ -ec | tee -a joomlascan-$rhost-8888.log
+    elif grep -i "WebDAV" whatweb-$rhost-8888.log 2>/dev/null; then
+        echo -e "${DOPE} Found WebDAV! Running davtest -move -sendbd auto -url http://$rhost:8888/ | tee -a davtestscan-$rhost-8888.log"
+        davtest -move -sendbd auto -url http://$rhost:8888/ | tee -a davtestscan-$rhost-8888.log
     else
         :
     fi
@@ -388,14 +415,18 @@ Enum_Web() {
     else
         :
     fi
-    if grep -q "WordPress" whatweb-$rhost-1234.log 2>/dev/null; then
-        wpscan --url http://$rhost/ --enumerate p,t,u | tee -a wpscan.log
-    elif grep -q "Drupal" whatweb-$rhost-1234.log 2>/dev/null; then
-        droopescan scan drupal -u http://$rhost -t 32 | tee -a drupalscan.log
-    elif grep -q "Joomla" whatweb-$rhost-1234.log 2>/dev/null; then
-        joomscan --url http://$rhost -ec | tee -a joomlascan.log
-    elif grep -q "WebDAV" whatweb-$rhost-1234.log 2>/dev/null; then
-        davtest -move -sendbd auto -url http://$rhost | tee -a davtestscan.log
+    if grep -i "WordPress" whatweb-$rhost-1234.log 2>/dev/null; then
+        echo -e "${DOPE} Found WordPress! Running wpscan --url http://$rhost:1234/ --enumerate p,t,u | tee -a wpscan-$rhost-1234.log"
+        wpscan --url http://$rhost:1234/ --enumerate p,t,u | tee -a wpscan-$rhost-1234.log
+    elif grep -i "Drupal" whatweb-$rhost-1234.log 2>/dev/null; then
+        echo -e "${DOPE} Found Drupal! Running droopescan scan drupal -u http://$rhost:1234/ -t 32 | tee -a drupalscan-$rhost-1234.log"
+        droopescan scan drupal -u http://$rhost:1234/ -t 32 | tee -a drupalscan-$rhost-1234.log
+    elif grep -i "Joomla" whatweb-$rhost-1234.log 2>/dev/null; then
+        echo -e "${DOPE} Found Joomla! Running joomscan --url http://$rhost:1234/ -ec | tee -a joomlascan-$rhost-1234.log"
+        joomscan --url http://$rhost:1234/ -ec | tee -a joomlascan-$rhost-1234.log
+    elif grep -i "WebDAV" whatweb-$rhost-1234.log 2>/dev/null; then
+        echo -e "${DOPE} Found WebDAV! Running davtest -move -sendbd auto -url http://$rhost:1234/ | tee -a davtestscan-$rhost-1234.log"
+        davtest -move -sendbd auto -url http://$rhost:1234/ | tee -a davtestscan-$rhost-1234.log
     else
         :
     fi
@@ -428,14 +459,18 @@ Enum_Web() {
     else
         :
     fi
-    if grep -q "WordPress" whatweb-$rhost-1337.log 2>/dev/null; then
-        wpscan --url http://$rhost/ --enumerate p,t,u | tee -a wpscan.log
-    elif grep -q "Drupal" whatweb-$rhost-1337.log 2>/dev/null; then
-        droopescan scan drupal -u http://$rhost -t 32 | tee -a drupalscan.log
-    elif grep -q "Joomla" whatweb-$rhost-1337.log 2>/dev/null; then
-        joomscan --url http://$rhost -ec | tee -a joomlascan.log
-    elif grep -q "WebDAV" whatweb-$rhost-1337.log 2>/dev/null; then
-        davtest -move -sendbd auto -url http://$rhost | tee -a davtestscan.log
+    if grep -i "WordPress" whatweb-$rhost-1337.log 2>/dev/null; then
+        echo -e "${DOPE} Found WordPress! Running wpscan --url http://$rhost:1337/ --enumerate p,t,u | tee -a wpscan-$rhost-1337.log"
+        wpscan --url http://$rhost:1337/ --enumerate p,t,u | tee -a wpscan-$rhost-1337.log
+    elif grep -i "Drupal" whatweb-$rhost-1337.log 2>/dev/null; then
+        echo -e "${DOPE} Found Drupal! Running droopescan scan drupal -u http://$rhost:1337/ -t 32 | tee -a drupalscan-$rhost-1337.log"
+        droopescan scan drupal -u http://$rhost:1337/ -t 32 | tee -a drupalscan-$rhost-1337.log
+    elif grep -i "Joomla" whatweb-$rhost-1337.log 2>/dev/null; then
+        echo -e "${DOPE} Found Joomla! Running joomscan --url http://$rhost:1337/ -ec | tee -a joomlascan-$rhost-1337.log"
+        joomscan --url http://$rhost:1337/ -ec | tee -a joomlascan-$rhost-1337.log
+    elif grep -i "WebDAV" whatweb-$rhost-1337.log 2>/dev/null; then
+        echo -e "${DOPE} Found WebDAV! Running davtest -move -sendbd auto -url http://$rhost:1337/ | tee -a davtestscan-$rhost-1337.log"
+        davtest -move -sendbd auto -url http://$rhost:1337/ | tee -a davtestscan-$rhost-1337.log
     else
         :
     fi
@@ -468,14 +503,18 @@ Enum_Web() {
     else
         :
     fi
-    if grep -q "WordPress" whatweb-$rhost-31337.log 2>/dev/null; then
-        wpscan --url http://$rhost/ --enumerate p,t,u | tee -a wpscan.log
-    elif grep -q "Drupal" whatweb-$rhost-31337.log 2>/dev/null; then
-        droopescan scan drupal -u http://$rhost -t 32 | tee -a drupalscan.log
-    elif grep -q "Joomla" whatweb-$rhost-31337.log 2>/dev/null; then
-        joomscan --url http://$rhost -ec | tee -a joomlascan.log
-    elif grep -q "WebDAV" whatweb-$rhost-31337.log 2>/dev/null; then
-        davtest -move -sendbd auto -url http://$rhost | tee -a davtestscan.log
+    if grep -i "WordPress" whatweb-$rhost-31337.log 2>/dev/null; then
+        echo -e "${DOPE} Found WordPress! Running wpscan --url http://$rhost:31337/ --enumerate p,t,u | tee -a wpscan-$rhost-31337.log"
+        wpscan --url http://$rhost:31337/ --enumerate p,t,u | tee -a wpscan-$rhost-31337.log
+    elif grep -i "Drupal" whatweb-$rhost-31337.log 2>/dev/null; then
+        echo -e "${DOPE} Found Drupal! Running droopescan scan drupal -u http://$rhost:31337/ -t 32 | tee -a drupalscan-$rhost-31337.log"
+        droopescan scan drupal -u http://$rhost:31337/ -t 32 | tee -a drupalscan-$rhost-31337.log
+    elif grep -i "Joomla" whatweb-$rhost-31337.log 2>/dev/null; then
+        echo -e "${DOPE} Found Joomla! Running joomscan --url http://$rhost:31337/ -ec | tee -a joomlascan-$rhost-31337.log"
+        joomscan --url http://$rhost:31337/ -ec | tee -a joomlascan-$rhost-31337.log
+    elif grep -i "WebDAV" whatweb-$rhost-31337.log 2>/dev/null; then
+        echo -e "${DOPE} Found WebDAV! Running davtest -move -sendbd auto -url http://$rhost:31337/ | tee -a davtestscan-$rhost-31337.log"
+        davtest -move -sendbd auto -url http://$rhost:31337/ | tee -a davtestscan-$rhost-31337.log
     else
         :
     fi
@@ -508,14 +547,18 @@ Enum_Web() {
     else
         :
     fi
-    if grep -q "WordPress" whatweb-$rhost-9050.log 2>/dev/null; then
-        wpscan --url http://$rhost/ --enumerate p,t,u | tee -a wpscan.log
-    elif grep -q "Drupal" whatweb-$rhost-9050.log 2>/dev/null; then
-        droopescan scan drupal -u http://$rhost -t 32 | tee -a drupalscan.log
-    elif grep -q "Joomla" whatweb-$rhost-9050.log 2>/dev/null; then
-        joomscan --url http://$rhost -ec | tee -a joomlascan.log
-    elif grep -q "WebDAV" whatweb-$rhost-9050.log 2>/dev/null; then
-        davtest -move -sendbd auto -url http://$rhost | tee -a davtestscan.log
+    if grep -i "WordPress" whatweb-$rhost-9050.log 2>/dev/null; then
+        echo -e "${DOPE} Found WordPress! Running wpscan --url http://$rhost:9050/ --enumerate p,t,u | tee -a wpscan-$rhost-9050.log"
+        wpscan --url http://$rhost:9050/ --enumerate p,t,u | tee -a wpscan-$rhost-9050.log
+    elif grep -i "Drupal" whatweb-$rhost-9050.log 2>/dev/null; then
+        echo -e "${DOPE} Found Drupal! Running droopescan scan drupal -u http://$rhost:9050/ -t 32 | tee -a drupalscan-$rhost-9050.log"
+        droopescan scan drupal -u http://$rhost:9050/ -t 32 | tee -a drupalscan-$rhost-9050.log
+    elif grep -i "Joomla" whatweb-$rhost-9050.log 2>/dev/null; then
+        echo -e "${DOPE} Found Joomla! Running joomscan --url http://$rhost:9050/ -ec | tee -a joomlascan-$rhost-9050.log"
+        joomscan --url http://$rhost:9050/ -ec | tee -a joomlascan-$rhost-9050.log
+    elif grep -i "WebDAV" whatweb-$rhost-9050.log 2>/dev/null; then
+        echo -e "${DOPE} Found WebDAV! Running davtest -move -sendbd auto -url http://$rhost:9050/ | tee -a davtestscan-$rhost-9050.log"
+        davtest -move -sendbd auto -url http://$rhost:9050/ | tee -a davtestscan-$rhost-9050.log
     else
         :
     fi
@@ -550,13 +593,17 @@ Enum_Web() {
         else
             :
         fi
-        if grep -q "WordPress" whatweb-$rhost-443.log 2>/dev/null; then
+        if grep -i "WordPress" whatweb-$rhost-443.log 2>/dev/null; then
+            echo -e "${DOPE} Found WordPress! Running wpscan --url https://$rhost/ --enumerate p,t,u | tee -a wpscan-$rhost-443.log"
             wpscan --url https://$rhost/ --enumerate p,t,u | tee -a wpscan-443.log
-        elif grep -q "Drupal" whatweb-$rhost-443.log 2>/dev/null; then
-            droopescan scan drupal -u https://$rhost -t 32 | tee -a drupalscan-443.log
-        elif grep -q "Joomla" whatweb-$rhost-443.log 2>/dev/null; then
+        elif grep -i "Drupal" whatweb-$rhost-443.log 2>/dev/null; then
+            echo -e "${DOPE} Found Drupal! Running droopescan scan drupal -u https://$rhost/ -t 32 | tee -a drupalscan-$rhost-443.log"
+            droopescan scan drupal -u https://$rhost/ -t 32 | tee -a drupalscan-443.log
+        elif grep -i "Joomla" whatweb-$rhost-443.log 2>/dev/null; then
+            echo -e "${DOPE} Found Joomla! Running joomscan --url https://$rhost -ec | tee -a joomlascan-$rhost-443.log"
             joomscan --url https://$rhost/ -ec | tee -a joomlascan-443.log
-        elif grep -q "WebDAV" whatweb-$rhost-443.log 2>/dev/null; then
+        elif grep -i "WebDAV" whatweb-$rhost-443.log 2>/dev/null; then
+            echo -e "${DOPE} Found WebDAV! Running davtest -move -sendbd auto -url https://$rhost/ | tee -a davtestscan-$rhost-443.log"
             davtest -move -sendbd auto -url https://$rhost | tee -a davtestscan-443.log
         else
             :
@@ -649,23 +696,26 @@ Enum_SMB
 Intense_Nmap_Scan
 
 # to-do
-Scan_Udp() {
-    nmap -v -Pn -sU --top-ports 100 -T3 --max-retries 3 --max-rtt-timeout 150ms -oA nmap/udp-$rhost $rhost
-}
-Scan_Udp
+# Scan_Udp() {
+#     nmap -v -Pn -sU --top-ports 100 -T3 --max-retries 3 --max-rtt-timeout 150ms -oA nmap/udp-$rhost $rhost
+# }
+# Scan_Udp
 
 Enum_SNMP() {
     cwd=$(pwd)
     # echo $cwd
     cd $cwd
-    grep -i "/udp" nmap/udp-$rhost.nmap | cut -d "/" -f 1 >udp-scan-$rhost.txt
+    grep -i "/udp" nmap/udp-$rhost.nmap | cut -d "/" -f 1 | grep 161 >udp-scan-$rhost.txt
+    grep -i "/udp" nmap/udp-$rhost.nmap | cut -d "/" -f 1 | grep 162 >>udp-scan-$rhost.txt
     if [ $(grep -q "161" udp-scan-$rhost.txt) ] || [ $(grep -q "162" udp-scan-$rhost.txt) ]; then
         printf "\e[93m################### RUNNING SNMP-ENUMERATION ##################################################### \e[0m\n"
         onesixtyone -c /usr/share/doc/onesixtyone/dict.txt $rhost | tee -a snmpenum-scan.log
         echo "${DOPE} Running: snmp-check -c public -v 1 -d $rhost | tee -a snmpenum-scan.log "
+        echo "${DOPE} Running: snmp-check -c public -v 2 -d $rhost | tee -a snmpenum-scan.log "
         snmp-check -c public -v 1 -d $rhost | tee -a snmpenum-scan.log
-        echo "${DOPE} Running: snmpenum $rhost public /opt/snmpenum/windows.txt | tee -a snmpenum-scan.log"
-        snmpenum $rhost public /opt/snmpenum/windows.txt | tee -a snmpenum-scan.log
+        snmp-check -c public -v 2 -d $rhost | tee -a snmpenum-scan.log
+        # echo "${DOPE} Running: snmpenum $rhost public /opt/snmpenum/windows.txt | tee -a snmpenum-scan.log"
+        # snmpenum $rhost public /opt/snmpenum/windows.txt | tee -a snmpenum-scan.log
     else
         echo -e "${DOPE} SNMP Port not open."
     fi
@@ -680,6 +730,18 @@ GOOD_MEASUERE() {
     printf "\e[93m#################################################################################################### \e[0m\n"
 }
 GOOD_MEASUERE
+
+Clean_Up() {
+    cwd=$(pwd)
+    cd $cwd
+    rm openports-$rhost.txt
+    rm openports2.txt
+    rm udp-scan-$rhost.txt
+    mkdir $rhost-report
+    find $cwd/ -maxdepth 1 -name "*$rhost*.*" -exec mv {} $cwd/$rhost-report/ \;
+    find $cwd/ -maxdepth 1 -name 'dirsearch*.*' -exec mv {} $cwd/$rhost-report/ \;
+}
+Clean_Up
 
 traperr() {
     echo "ERROR: ${BASH_SOURCE[1]} at about ${BASH_LINENO[0]}"
