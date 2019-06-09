@@ -14,11 +14,12 @@ echo '[+] Downloading dirsearch repository in /opt folder'
 cd /opt
 git clone https://github.com/maurosoria/dirsearch.git
 
-echo '[+] Downloading & Installing penetest-machine repository in /opt folder'
-cd /opt
-git clone https://github.com/DanMcInerney/pentest-machine.git
-cd pentest-machine
-./setup.sh
+# pentest-machine is no longer being used 
+# echo '[+] Downloading & Installing penetest-machine repository in /opt folder'
+# cd /opt
+# git clone https://github.com/DanMcInerney/pentest-machine.git
+# cd pentest-machine
+# ./setup.sh
 cd /opt
 git clone https://github.com/RoliSoft/ReconScan.git
 
