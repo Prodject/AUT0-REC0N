@@ -217,14 +217,14 @@ Enum_Web_SSL() {
 }
 
 ftp_scan() {
-    grep -i "ftp" nmap/open-ports-$rhost.nmap | cut -d "/" -f 1 >openportsFTP-$rhost.txt
+    grep -w "ftp" nmap/open-ports-$rhost.nmap | cut -d "/" -f 1 >openportsFTP-$rhost.txt
     portfilenameFTP=openportsFTP-$rhost.txt
     # echo $portfilenameSSL
     PortsLinesFTP=$(cat $portfilenameFTP)
-    if [ -n "$PortLinesFTP" ]; then
+    if [ -n openportsFTP-$rhost.txt ]; then
         for ftp_port in $PortsLinesFTP; do
             echo -e "${DOPE} Running nmap ftp script scan on port: $ftp_port"
-            nmap -sV -Pn -p $ftp_port --script=ftp-anon,ftp-bounce,ftp-libopie,ftp-proftpd-backdoor,ftp-vsftpd-backdoor,ftp-vuln-cve2010-4221 -v -oA nmap/ftp-enum
+            nmap -sV -Pn -p $ftp_port --script=ftp-anon,ftp-bounce,ftp-libopie,ftp-proftpd-backdoor,ftp-vsftpd-backdoor,ftp-vuln-cve2010-4221 -v -oA nmap/ftp-enum $rhost
         done
     fi
 }
