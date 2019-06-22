@@ -138,8 +138,8 @@ Enum_Web() {
             :
         fi
         if grep -i "WordPress" whatweb-$rhost-$port.log 2>/dev/null; then
-            echo -e "${DOPE} Found WordPress! Running wpscan --url http://$rhost:$port/ --wp-content-dir wp-login.php --enumerate p,t,u | tee -a wpscan-$rhost-$port.log"
-            gnome-terminal --geometry 123x35-0+0 -- bash -c "wpscan --url http://$rhost:$port/ --wp-content-dir wp-login.php --enumerate p,t,u | tee -a wpscan-$rhost-$port.log; exec $SHELL" &>/dev/null
+            echo -e "${DOPE} Found WordPress! Running wpscan --no-update --url http://$rhost:$port/ --wp-content-dir wp-login.php --enumerate p,vp,vt,cb,dbe,u,m --plugin-detection aggressive --plugins-version-detection aggressive | tee -a wpscan-$rhost-$port.log"
+            gnome-terminal --geometry 123x35-0+0 -- bash -c "wpscan --no-update --url http://$rhost:$port/ --wp-content-dir wp-login.php --enumerate p,vp,vt,cb,dbe,u,m --plugin-detection aggressive --plugins-version-detection aggressive | tee -a wpscan-$rhost-$port.log; exec $SHELL" &>/dev/null
         elif grep -i "Drupal" whatweb-$rhost-$port.log 2>/dev/null; then
             echo -e "${DOPE} Found Drupal! Running droopescan scan drupal -u http://$rhost -t 32 | tee -a drupalscan-$rhost-80.log"
             droopescan scan drupal -u http://$rhost:$port/ -t 32 | tee -a drupalscan-$rhost-$port.log
@@ -199,8 +199,8 @@ Enum_Web_SSL() {
             :
         fi
         if grep -i "WordPress" whatweb-$rhost-$port.log 2>/dev/null; then
-            echo -e "${DOPE} Found WordPress! Running wpscan --url https://$rhost:$port/ --enumerate p,t,u | tee -a wpscan-$rhost-$port.log"
-            wpscan --url https://$rhost:$port/ --wp-content-dir wp-login.php --enumerate p,t,u | tee -a wpscan.log
+            echo -e "${DOPE} Found WordPress! Running wpscan --no-update --url http://$rhost:$port/ --wp-content-dir wp-login.php --enumerate p,vp,vt,cb,dbe,u,m --plugin-detection aggressive --plugins-version-detection aggressive | tee -a wpscan-$rhost-$port.log"
+            gnome-terminal --geometry 123x35-0+0 -- bash -c "wpscan --no-update --url http://$rhost:$port/ --wp-content-dir wp-login.php --enumerate p,vp,vt,cb,dbe,u,m --plugin-detection aggressive --plugins-version-detection aggressive | tee -a wpscan-$rhost-$port.log; exec $SHELL" &>/dev/null
         elif grep -i "Drupal" whatweb-$rhost-$port.log 2>/dev/null; then
             echo -e "${DOPE} Found Drupal! Running droopescan scan drupal -u https://$rhost -t 32 | tee -a drupalscan-$rhost-$port.log"
             droopescan scan drupal -u https://$rhost:$port/ -t 32 | tee -a drupalscan.log
