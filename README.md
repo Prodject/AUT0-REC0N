@@ -1,7 +1,6 @@
 # AUTO-RECON
 ## Easy to use script to quickly scan a Target in Kali Linux
-
-![alt text](https://github.com/gotr00t0day/AUT0-REC0N/blob/master/Auto-Recon-3-0.PNG)
+<img src="https://github.com/gotr00t0day/AUT0-REC0N/blob/master/autorecon3-2.gif" width="1000" height="600" />
 
 ### INSTALLATION
 ```
