@@ -13,7 +13,7 @@ chmod +x setup.sh
 
 ### Usage:
 ```
-./auto-recon.sh RHOST
+./auto-recon.sh <Target-IP>
 ```
 ### Terminal Geometry
 The gnome-terminal geometry is configured for 2 screens. If the new terminal windows don't open up the way that you like,
