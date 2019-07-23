@@ -189,6 +189,7 @@ Enum_Web() {
                 if [[ $port -eq "$gtcatport" ]]; then
                     echo -e "${DOPE} Found TomCat! Running: gobuster dir -u http://$rhost:$port -w /usr/share/seclists/Discovery/Web-Content/tomcat.txt -l -t 50 -x .html,.php,.asp,.aspx,.txt,.js -e -k -o gobuster-$rhost-$port.txt"
                     gobuster dir -u http://$rhost:$port -w /usr/share/seclists/Discovery/Web-Content/tomcat.txt -l -t 50 -x .html,.php,.asp,.aspx,.txt,.js -e -k -o gobuster-$rhost-$port.txt
+                    rm current-tomcat-port.txt
                 else
                     :
                 fi
@@ -432,7 +433,7 @@ ftp_scan() {
 ldap_enum() {
     if [[ $(grep -w "ldap" top-open-services.txt) ]] || [[ $(grep -w "389" top-open-ports.txt) ]]; then
         echo -e "${DOPE} Found LDAP! Running Enum4Linux"
-        enum4linux -a -M -l -d $rhost | tee ldapenum-$rhost.txt
+        enum4linux -a -l -v $rhost | tee ldapenum-$rhost.txt
     fi
     if ! grep -q "389" top-open-ports.txt; then
         grep -v "filtered" nmap/udp-$rhost.nmap | grep "open" | cut -d "/" -f 1 >udp-scan2-$rhost.txt
@@ -570,7 +571,7 @@ vulnscan() {
     # grep -i "/tcp" nmap/full-tcp-scan-$rhost.nmap | grep -w "ssh" | cut -d "/" -f 1 >sshports-$rhost.txt
     if [[ -s allopenports2-$rhost.txt ]]; then
         echo -e "${DOPE} Running nmap VulnScan!"
-        nmap -v -sV -Pn --script nmap-vulners,vulscan --script-args vulscandb=scipvuldb.csv -p $(tr '\n' , <allopenports2-$rhost.txt) -oA nmap/vulnscan-$rhost $rhost
+        nmap -v -sV -Pn --script nmap-vulners,vulscan --script-args vulscandb=expliotdb.csv -p $(tr '\n' , <allopenports2-$rhost.txt) -oA nmap/vulnscan-$rhost $rhost
 
     fi
 }
@@ -751,7 +752,6 @@ __̴ı̴̴̡̡̡ ̡͌l̡̡̡ ̡͌l̡*̡̡ ̴̡ı̴̴̡ ̡̡͡|̲̲̲͡͡͡ ̲▫
 EOF
     echo ""
 }
-# you_dont_have_to_drive_no_fancy_car_just_for_you_to_be_a_shining_star
 
 # Pre-process options to:
 # - expand -xyz into -x -y -z
@@ -810,6 +810,45 @@ while [[ $# -gt 0 ]]; do
         vulnscan 0
         Enum_Oracle 0
         Clean_Up 0
+        you_dont_have_to_drive_no_fancy_car_just_for_you_to_be_a_shining_star 0
+        ;;
+    -f | --file)
+        shift
+        filearg=$1
+        if [[ -f $filearg ]]; then
+            targets=$(cat $filearg)
+            for target in $targets; do
+                unset rhost
+                set -- "$target" "${@:3}"
+                rhost=$target
+                validate_IP
+                banner1 0
+                Open_Ports_Scan 0
+                Web_Vulns 0
+                Web_Proxy_Scan 0
+                Enum_Web 0
+                unset rhost
+                set -- "$target" "${@:3}"
+                rhost=$target
+                Enum_Web_SSL
+                unset rhost
+                set -- "$target" "${@:3}"
+                rhost=$target
+                ftp_scan 0
+                nfs_enum 0
+                Intense_Nmap_UDP_Scan 0
+                Enum_SMB 0
+                cups_enum 0
+                java_rmi_scan 0
+                FULL_TCP_GOOD_MEASUERE_VULN_SCAN 0
+                Enum_SNMP 0
+                vulnscan 0
+                Enum_Oracle 0
+                Clean_Up 0
+            done
+        else
+            echo -e "${NOTDOPE} File must be 1 IP Address per line."
+        fi
         you_dont_have_to_drive_no_fancy_car_just_for_you_to_be_a_shining_star 0
         ;;
     -a | --all)
