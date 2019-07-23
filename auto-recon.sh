@@ -30,6 +30,8 @@ helpFunction() {
     echo " -a, --all          Scan The Entire Subnet!"
     echo " "
     echo " -H, --HTB          Scan Single Target ignore nmap subnet scan"
+    echo " "
+    echo " -f, --file         Scan all hosts from a file of IP Addresses separated  1 per line"
     if [ -n "$1" ]; then
         exit "$1"
     fi
@@ -198,7 +200,7 @@ Enum_Web() {
                 cd /opt/magescan
                 bin/magescan scan:all http://$rhost:$port/ | tee magento-$rhost-$port.log
                 cd - &>/dev/null
-                echo -e "${DOPE} Consider crawling site with this wordlist: /usr/share/seclists/Discovery/Web-Content/CMS/sitemap-magento.txt"
+                echo -e "${DOPE} Consider crawling site: python3 /opt/dirsearch/dirsearch.py -u http://$rhost:$port -w /usr/share/seclists/Discovery/Web-Content/CMS/sitemap-magento.txt -e php,asp,aspx,txt,html -t 80 -x 403,401,404,500 --plain-text-report dirsearch-magento-$rhost-$port.log"
             else
                 :
             fi
@@ -226,7 +228,7 @@ Web_Proxy_Scan() {
     httpPortsLines3=$(cat $portfilename3)
     for port in $httpPortsLines3; do
         if [[ -s openports-webproxies-$rhost.txt ]]; then
-            echo -e "Found http-proxy at http://$rhost:$port"
+            echo -e "${DOPE} Found http-proxy at http://$rhost:$port"
             nikto -h http://$rhost/ -useproxy http://$rhost:$port/
         fi
     done
@@ -366,7 +368,7 @@ Enum_Web_SSL() {
             if [ $(grep -i "WordPress" whatweb-ssl-$rhost-$port.log 2>/dev/null) ]; then
                 echo -e "${DOPE} Found WordPress! Running wpscan --no-update --disable-tls-checks --url https://$rhost:$port/ --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee wpscan2-$rhost-$port.log"
                 wpscan --no-update --disable-tls-checks --url https://$rhost:$port/ --wp-content-dir wp-content --enumerate vp,vt,cb,dbe,u,m --plugins-detection aggressive | tee wpscan2-$rhost-$port.log
-                sleep 5
+                sleep 1
                 if [[ -n $(grep -i "User(s) Identified" wpscan2-$rhost-$port.log) ]]; then
                     grep -w -A 100 "User(s)" wpscan2-$rhost-$port.log | grep -w "[+]" | cut -d " " -f 2 | head -n -7 >wp-users2.txt
                     # create wordlist from web-page with cewl
@@ -378,7 +380,7 @@ Enum_Web_SSL() {
                     sleep 3
                     # brute force again with wpscan
                     wpscan --no-update --disable-tls-checks --url https://$rhost:$port/ --wp-content-dir wp-login.php -U wp-users2.txt -P cewl-list.txt threads 50 | tee wordpress-cewl-brute2.txt
-                    sleep 5
+                    sleep 1
                     if grep -i "No Valid Passwords Found" wordpress-cewl-brute2.txt; then
                         if [ -s john-cool-list2.txt ]; then
                             wpscan --no-update --disable-tls-checks --url https://$rhost:$port/ --wp-content-dir wp-login.php -U wp-users2.txt -P john-cool-list2.txt threads 50 | tee wordpress-john-cewl-brute2.txt
@@ -386,7 +388,7 @@ Enum_Web_SSL() {
                             echo "John wordlist is empty :("
                         fi
                         # if password not found then run it again with fasttrack.txt
-                        sleep 5
+                        sleep 1
                         if grep -i "No Valid Passwords Found" wordpress-john-cewl-brute2.txt; then
                             wpscan --no-update --disable-tls-checks --url https://$rhost:$port/ --wp-content-dir wp-login.php -U wp-users2.txt -P /usr/share/wordlists/fasttrack.txt threads 50 | tee wordpress-fasttrack-brute2.txt
                         fi
@@ -401,6 +403,12 @@ Enum_Web_SSL() {
             elif grep -i "WebDAV" whatweb-ssl-$rhost-$port.log 2>/dev/null; then
                 echo -e "${DOPE} Found WebDAV! Running davtest -move -sendbd auto -url https://$rhost:$port/ | tee davtestscan-$rhost-$port.log"
                 davtest -move -sendbd auto -url https://$rhost:$port/ | tee -a davtestscan-$rhost-$port.log
+            elif grep -i "magento" whatweb-ssl-$rhost-$port.log 2>/dev/null; then
+                echo -e "${DOPE} Found Magento! Running /opt/magescan/bin/magescan scan:all --insecure https://$rhost/ | tee magescan-$rhost-$port.log"
+                cd /opt/magescan
+                bin/magescan scan:all --insecure https://$rhost:$port/ | tee magento-$rhost-$port.log
+                cd - &>/dev/null
+                echo -e "${DOPE} Consider crawling site: python3 /opt/dirsearch/dirsearch.py -u https://$rhost:$port -w /usr/share/seclists/Discovery/Web-Content/CMS/sitemap-magento.txt -e php,asp,aspx,txt,html -t 80 -x 403,401,404,500 --plain-text-report dirsearch-magento-$rhost-$port.log"
             else
                 :
             fi
@@ -557,7 +565,7 @@ Enum_SNMP() {
 
 FULL_TCP_GOOD_MEASUERE_VULN_SCAN() {
     cwd=$(pwd)
-    echo -e "${DOPE} Running Full Nmap TCP port Scan For Good Measuere, just in case we missed one ;)"
+    echo -e "${DOPE} Running Full Nmap TCP port Scan ${DOPE} nmap -vv -Pn -sC -sV -p- -T4 -oA nmap/full-tcp-scan-$rhost $rhost"
     nmap -vv -Pn -sC -sV -p- -T4 -oA nmap/full-tcp-scan-$rhost $rhost
     echo -e "${YELLOW}#################################################################################################### ${END}"
     echo -e "${TEAL}########################### Checking Vulnerabilities  ############################################## ${END}"
