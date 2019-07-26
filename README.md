@@ -14,8 +14,8 @@ chmod +x setup.sh
 ### Usage:
 ```
 ./auto-recon.sh -h [--help]
-./auto-recon.sh -t [--target] RHOST ...check up hosts in subnet then enumerate single target IP
-./auto-recon.sh -a [--all] RHOST ...check up hosts in subnet then enumerate ALL UP hosts
+./auto-recon.sh -t [--target] RHOST ...check up hosts in subnet and enumerate single target IP
+./auto-recon.sh -a [--all] RHOST ...check up hosts in subnet and enumerate ALL UP hosts
 ./auto-recon.sh -H [--HTB] RHOST ...enumerate single target + thorough dns checks
 ./auto-recon.sh -f [--file] RHOST ...enumerate all target IP addresses in a file
 ```
