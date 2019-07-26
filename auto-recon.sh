@@ -579,7 +579,7 @@ vulnscan() {
     # grep -i "/tcp" nmap/full-tcp-scan-$rhost.nmap | grep -w "ssh" | cut -d "/" -f 1 >sshports-$rhost.txt
     if [[ -s allopenports2-$rhost.txt ]]; then
         echo -e "${DOPE} Running nmap VulnScan!"
-        nmap -v -sV -Pn --script nmap-vulners,vulscan --script-args vulscandb=exploitdb.csv -p $(tr '\n' , <allopenports2-$rhost.txt) -oA nmap/vulnscan-$rhost $rhost
+        nmap -v -sV -Pn --script nmap-vulners,vulscan --script-args vulscandb=scipvuldb.csv -p $(tr '\n' , <allopenports2-$rhost.txt) -oA nmap/vulnscan-$rhost $rhost
 
     fi
 }
