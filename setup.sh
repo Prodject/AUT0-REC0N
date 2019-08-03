@@ -66,7 +66,7 @@ unzip -o aquatone_linux_amd64_1.7.0.zip
 apt install chromium -y
 ln -s /opt/aquatone/aquatone /usr/local/bin/aquatone
 
-echo "hopefully you have go installed and your go path configured correctly. Other-wise you'll have to install it manually if you want to use subfinder in this script etc..."
+echo "hopefully you have go installed and your go path configured correctly. Other-wise you'll have to install subfinder manually."
 go get github.com/subfinder/subfinder
 
 echo -e "${DOPE} Installing snmp-mibs-downloader. This will beautify snmp-walk output to more human readable format"
