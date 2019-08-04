@@ -1,6 +1,6 @@
 # AUTO-RECON
 ## Quickly Enumerate a Target in Kali Linux
-<img src="https://github.com/gotr00t0day/AUT0-REC0N/blob/master/autorecon4.gif" />
+<img src="https://github.com/gotr00t0day/AUT0-REC0N/blob/master/recon.gif" />
 
 ### INSTALLATION
 ```
