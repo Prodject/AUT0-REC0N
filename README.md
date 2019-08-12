@@ -5,7 +5,7 @@
 ### INSTALLATION
 ```
 cd /opt
-git clone https://github.com/Knowledge-Wisdom-Understanding/Auto-Recon.git
+git clone https://github.com/gotr00t0day/AUT0-REC0N.git
 cd Auto-Recon
 chmod +x setup.sh
 ./setup.sh
